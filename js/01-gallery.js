@@ -1,13 +1,12 @@
 import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-console.log(galleryItems);
-
 const container = document.querySelector(".gallery");
+
 const markupImg = createMarkupImg(galleryItems);
 
 container.insertAdjacentHTML("beforeend", markupImg);
-container.addEventListener("click", hendleImgClick);
+container.addEventListener("click", handleClick);
 
 function createMarkupImg(array) {
   return array
@@ -27,7 +26,7 @@ function createMarkupImg(array) {
     .join("");
 }
 
-function hendleImgClick(event) {
+function handleClick(event) {
   event.preventDefault();
 
   if (event.target === event.currentTarget) {
@@ -38,12 +37,32 @@ function hendleImgClick(event) {
   //   console.log(event.target);
   //   console.log(targetEl);
 
-  const instance = basicLightbox.create(`<div class="modal">
-     <img
-        src="${event.target.dataset.source}"
-        alt="${event.target.alt}"
-      />
-    </div>`);
+  const handleCloseModal = (event) => {
+    if (event.code === "Escape") {
+      modal.close();
+    }
+  };
 
-  instance.show();
+  const modal = basicLightbox.create(
+    `<div class="modal">
+         <img
+            src="${event.target.dataset.source}"
+            alt="${event.target.alt}"
+            width="1000"
+          />
+        </div>`,
+    {
+      onShow: () => {
+        window.addEventListener("keydown", handleCloseModal);
+        modal.element().querySelector("img").onclick = modal.close;
+      },
+      onclose: () => {
+        window.removeEventListener("keydown", handleCloseModal);
+      },
+    }
+  );
+
+  modal.show();
 }
+
+console.log(galleryItems);
